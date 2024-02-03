@@ -3,9 +3,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import L from "leaflet";
 import "leaflet-routing-machine";
-import customMarkerIcon from "leaflet/dist/images/marker-icon-2x.png"; // Update the path to your custom marker icon
+import customMarkerIcon from "leaflet/dist/images/marker-icon-2x.png";
 import { Icon } from "leaflet";
-import DrawMap from "./DrawMap";
 import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw";
 
@@ -22,7 +21,7 @@ const MapComponent = () => {
   const [drawControl, setDrawControl] = useState(null);
   const [drawMode, setDrawMode] = useState(false);
   const [drawnFeatures, setDrawnFeatures] = useState(null);
-  
+
   const customIcon = new L.Icon({
     iconUrl: customMarkerIcon,
     iconSize: [25, 41],
@@ -34,6 +33,7 @@ const MapComponent = () => {
       map.on("draw:created", function (e) {
         const layer = e.layer;
         drawnFeatures.addLayer(layer);
+        console.log(e.layer._latlngs);
       });
     }
   }, [drawnFeatures]);
@@ -41,65 +41,75 @@ const MapComponent = () => {
   useEffect(() => {
     if (!map) {
       // Initialize Leaflet map
-      var newMap = L.map("map").setView([51.505, -0.09], 13);
-      console.log(L);
-      
-    // Add the OpenStreetMap tiles
-    const osm = L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }
-    ).addTo(newMap);
+      var newMap = L.map("map").setView([0, 0], 13); // Default to [0, 0]
 
-    const features = new L.FeatureGroup();
-    newMap.addLayer(features);
-    setDrawnFeatures(features);
+      // Get user's current location and set the map view
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          newMap.setView([latitude, longitude], 13);
+        },
+        (error) => {
+          console.error("Error getting user's location:", error);
+        }
+      );
 
-    // Initialize the draw control
-    const control = new L.Control.Draw({
-      edit: {
-        featureGroup: features,
-        remove: false,
-      },
-      draw: {
-        polygon: {
-          shapeOptions: {
-            color: "purple",
-          },
-        },
-        polyline: {
-          shapeOptions: {
-            color: "red",
-          },
-        },
-        rect: {
-          shapeOptions: {
-            color: "green",
-          },
-        },
-        circle: {
-          shapeOptions: {
-            color: "steelblue",
-          },
-        },
-      },
-    });
+      // Add the OpenStreetMap tiles
+      const osm = L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }
+      ).addTo(newMap);
 
-    // Add the draw control to the map
-    newMap.addControl(control);
-    
+      const features = new L.FeatureGroup();
+      newMap.addLayer(features);
+      setDrawnFeatures(features);
+
+      // Initialize the draw control
+      const control = new L.Control.Draw({
+        edit: {
+          featureGroup: features,
+          remove: false,
+        },
+        draw: {
+          polygon: {
+            shapeOptions: {
+              color: "purple",
+            },
+          },
+          polyline: {
+            shapeOptions: {
+              color: "red",
+            },
+          },
+          rect: {
+            shapeOptions: {
+              color: "green",
+            },
+          },
+          circle: {
+            shapeOptions: {
+              color: "steelblue",
+            },
+          },
+        },
+      });
+
+      // Add the draw control to the map
+      newMap.addControl(control);
+
       // Set map object to state
       setMap(newMap);
-    setDrawControl(control);
+      setDrawControl(control);
 
       // Add base tile layer from OpenStreetMap
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(newMap);
-  }
+    }
   }, [map]);
 
   const handleSearch = async (e) => {
