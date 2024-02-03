@@ -6,9 +6,11 @@ import MapWithDirections from "./MapWithDirections";
 import reportWebVitals from "./reportWebVitals";
 import MapComponent from "./MapComponent";
 import "leaflet/dist/leaflet.css";
+import DrawMap from "./DrawMap";
+import LeafletDraw from "./LeafletDraw";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<MapComponent />);
+root.render(<DrawMap />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

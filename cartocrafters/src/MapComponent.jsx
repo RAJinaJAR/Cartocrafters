@@ -5,6 +5,7 @@ import L from "leaflet";
 import "leaflet-routing-machine";
 import customMarkerIcon from "leaflet/dist/images/marker-icon-2x.png"; // Update the path to your custom marker icon
 import { Icon } from "leaflet";
+import DrawMap from "./DrawMap";
 
 const MapComponent = () => {
   const [start, setStart] = useState({ address: "", lat: null, lng: null });
@@ -168,6 +169,7 @@ const MapComponent = () => {
 
   return (
     <div>
+      <DrawMap />
       <form onSubmit={handleSearch} className="form">
         <div>
           <label className="label ">Start Point:</label>
