@@ -4,7 +4,8 @@
   "description": "This is the node server for the apis to be created for gettting the distance between two points and give the best routes",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "keywords": [
     "Mpa",
