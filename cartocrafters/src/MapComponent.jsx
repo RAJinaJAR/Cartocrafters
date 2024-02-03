@@ -6,6 +6,8 @@ import "leaflet-routing-machine";
 import customMarkerIcon from "leaflet/dist/images/marker-icon-2x.png"; // Update the path to your custom marker icon
 import { Icon } from "leaflet";
 import DrawMap from "./DrawMap";
+import "leaflet-draw/dist/leaflet.draw.css";
+import "leaflet-draw";
 
 const MapComponent = () => {
   const [start, setStart] = useState({ address: "", lat: null, lng: null });
@@ -17,6 +19,10 @@ const MapComponent = () => {
   const [endSuggestions, setEndSuggestions] = useState([]);
   const [routeControl, setRouteControl] = useState(null);
 
+  const [drawControl, setDrawControl] = useState(null);
+  const [drawMode, setDrawMode] = useState(false);
+  const [drawnFeatures, setDrawnFeatures] = useState(null);
+  
   const customIcon = new L.Icon({
     iconUrl: customMarkerIcon,
     iconSize: [25, 41],
@@ -24,19 +30,76 @@ const MapComponent = () => {
   });
 
   useEffect(() => {
+    if (drawnFeatures) {
+      map.on("draw:created", function (e) {
+        const layer = e.layer;
+        drawnFeatures.addLayer(layer);
+      });
+    }
+  }, [drawnFeatures]);
+
+  useEffect(() => {
     if (!map) {
       // Initialize Leaflet map
-      const newMap = L.map("map").setView([51.505, -0.09], 13);
+      var newMap = L.map("map").setView([51.505, -0.09], 13);
+      console.log(L);
+      
+    // Add the OpenStreetMap tiles
+    const osm = L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }
+    ).addTo(newMap);
 
+    const features = new L.FeatureGroup();
+    newMap.addLayer(features);
+    setDrawnFeatures(features);
+
+    // Initialize the draw control
+    const control = new L.Control.Draw({
+      edit: {
+        featureGroup: features,
+        remove: false,
+      },
+      draw: {
+        polygon: {
+          shapeOptions: {
+            color: "purple",
+          },
+        },
+        polyline: {
+          shapeOptions: {
+            color: "red",
+          },
+        },
+        rect: {
+          shapeOptions: {
+            color: "green",
+          },
+        },
+        circle: {
+          shapeOptions: {
+            color: "steelblue",
+          },
+        },
+      },
+    });
+
+    // Add the draw control to the map
+    newMap.addControl(control);
+    
       // Set map object to state
       setMap(newMap);
+    setDrawControl(control);
 
       // Add base tile layer from OpenStreetMap
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(newMap);
-    }
+  }
   }, [map]);
 
   const handleSearch = async (e) => {
@@ -167,9 +230,23 @@ const MapComponent = () => {
     setEndSuggestions([]);
   };
 
+  const toggleDrawMode = () => {
+    if (map && drawControl) {
+      if (!drawMode) {
+        map.addControl(drawControl);
+        setDrawMode(true);
+      } else {
+        map.removeControl(drawControl);
+        setDrawMode(false);
+      }
+    }
+  };
+
   return (
     <div>
-      <DrawMap />
+      <button onClick={toggleDrawMode}>
+        {drawMode ? "Exit Draw Mode" : "Enter Draw Mode"}
+      </button>
       <form onSubmit={handleSearch} className="form">
         <div>
           <label className="label ">Start Point:</label>
