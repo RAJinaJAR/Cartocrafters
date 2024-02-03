@@ -3,7 +3,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import L from "leaflet";
 import "leaflet-routing-machine";
-import customMarkerIcon from "leaflet/dist/images/marker-icon.png" // Update the path to your custom marker icon
+import customMarkerIcon from "leaflet/dist/images/marker-icon-2x.png"; // Update the path to your custom marker icon
 import { Icon } from "leaflet";
 
 const MapComponent = () => {
@@ -14,6 +14,7 @@ const MapComponent = () => {
   const [endMarker, setEndMarker] = useState(null);
   const [startSuggestions, setStartSuggestions] = useState([]);
   const [endSuggestions, setEndSuggestions] = useState([]);
+  const [routeControl, setRouteControl] = useState(null);
 
   const customIcon = new L.Icon({
     iconUrl: customMarkerIcon,
@@ -46,12 +47,21 @@ const MapComponent = () => {
       const endCoords = await getCoordinates(end.address);
 
       if (startCoords && endCoords) {
-        setStart({ ...start, lat: startCoords.lat, lng: startCoords.lng });
-        setEnd({ ...end, lat: endCoords.lat, lng: endCoords.lng });
+        // Remove existing route if it exists
+        if (routeControl) {
+          map.removeControl(routeControl);
+          setRouteControl(null); // Reset the routeControl state
+        }
 
-        // Remove previous markers
-        if (startMarker) startMarker.remove();
-        if (endMarker) endMarker.remove();
+        // Remove existing markers if they exist
+        if (startMarker) {
+          startMarker.remove();
+          setStartMarker(null); // Reset the start marker state
+        }
+        if (endMarker) {
+          endMarker.remove();
+          setEndMarker(null); // Reset the end marker state
+        }
 
         // Add start marker
         const newStartMarker = L.marker([startCoords.lat, startCoords.lng], {
@@ -87,9 +97,12 @@ const MapComponent = () => {
             L.latLng(endCoords.lat, endCoords.lng),
           ],
           routeWhileDragging: true,
-        }).addTo(map);
+        });
 
-        control.route();
+        // Save the route control to the state variable
+        setRouteControl(control);
+
+        control.addTo(map).route();
       }
     } catch (error) {
       console.error("Error fetching coordinates:", error);
