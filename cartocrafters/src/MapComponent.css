@@ -1,0 +1,41 @@
+/* Add your specific styling here */
+form {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    margin: auto;
+  }
+  
+  label {
+    margin-bottom: 5px;
+  }
+  
+  input {
+    padding: 5px;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .suggestions {
+    border: 1px solid #ccc;
+    max-height: 100px;
+    overflow-y: auto;
+    margin-top: 5px;
+  }
+  
+  .suggestions div {
+    padding: 5px;
+    cursor: pointer;
+  }
+  
+  #map {
+    height: 100vh;
+    width: 100vw;
+  }
+  

@@ -3,3 +3,23 @@
   width: 100%;
   height: 100%;
 }
+
+.suggestions {
+  position: absolute;
+  z-index: 999;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.suggestions div {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestions div:hover {
+  background-color: #f4f4f4;
+}
