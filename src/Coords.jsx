@@ -183,13 +183,19 @@ const MapComponent = () => {
               },
               icon: L.icon({
                 iconUrl: customMarkerIcon,
-                iconSize: [10, 95],
-                iconAnchor: [22, 94],
-                popupAnchor: [-3, -100],
+                iconSize: [30, 40],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30],
               }),
             });
 
             const myPopup = L.popup().setContent("Popup content here");
+
+            marker.on("dragend", function (event) {
+              const latlng = event.target.getLatLng();
+              console.log("New Latitude:", latlng.lat);
+              console.log("New Longitude:", latlng.lng);
+            });
 
             marker.bindPopup(myPopup).openPopup(); // Bind and open popup on marker
 
