@@ -7,8 +7,9 @@ import customMarkerIcon from "leaflet/dist/images/marker-icon-2x.png";
 import { Icon } from "leaflet";
 import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw";
-
-const Coords = () => {
+import * as H3 from "h3-js";
+var S2 = require('s2-geometry').S2;
+const Cells = () => {
   const [start, setStart] = useState({ address: "", lat: null, lng: null });
   const [end, setEnd] = useState({ address: "", lat: null, lng: null });
   const [map, setMap] = useState(null);
@@ -195,6 +196,17 @@ const Coords = () => {
               const latlng = event.target.getLatLng();
               console.log("New Latitude:", latlng.lat);
               console.log("New Longitude:", latlng.lng);
+              //   const s2Cell = S2.latLngToKey(latlng.lat, latlng.lng, 15);
+              console.log(event.target)
+              // Calculate H3 cell
+              const h3Cell = H3.latLngToCell(latlng.lat, latlng.lng, 7);
+
+              //   console.log("S2 Cell:", s2Cell);
+              console.log("H3 Cell:", h3Cell);
+              var key = S2.latLngToKey(latlng.lat, latlng.lng,15);
+              console.log("S2 Key",key);
+              console.log(S2.keyToId(key))
+
             });
 
             marker.bindPopup(myPopup).openPopup(); // Bind and open popup on marker
@@ -332,4 +344,4 @@ const Coords = () => {
   );
 };
 
-export default Coords;
+export default Cells;
