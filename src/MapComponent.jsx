@@ -9,7 +9,8 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw";
 import { MDBBtn, MDBInput } from "mdb-react-ui-kit";
 import pic from "./images/pic.png";
-import '/Users/raj.pandey/Documents/Cartocrafters/src/MapComponent.css'
+import "./MapComponent.css";
+
 const MapComponent = () => {
   const [start, setStart] = useState({ address: "", lat: null, lng: null });
   const [end, setEnd] = useState({ address: "", lat: null, lng: null });
@@ -253,128 +254,107 @@ const MapComponent = () => {
       }
     }
   };
-  const formStyle = {
-
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-    padding: "20px", // Add padding to adjust the form content
-  };
 
   return (
     <>
-
-    <div className="column-container">
-      <div className="first-div">
-        {/* Content for the first div */}
-        {/* Add more content as needed */}
-        <form onSubmit={handleSearch} style={formStyle}>
-          <div>
-            <div
-              style={{
-                marginLeft: "5px",
-                marginTop: "8px",
-                marginBottom: "5px",
-                width: "75%",
-              }}
-            >
-              <MDBInput
-                size="sm"
-                label="Enter you start point"
-                type="text"
-                name="start"
-                placeholder="Enter start address"
-                value={start.address}
-                onChange={handleStartInputChange}
-              />
-            </div>
-            <div className="suggestions">
-              {startSuggestions.map((item, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleSelectStartSuggestion(item)}
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-
-            <div style={{ marginLeft: "5px", marginBottom: "5px", width: "75%" }}>
-              <MDBInput
-                size="sm"
-                label="Enter you end point"
-                type="text"
-                name="end"
-                placeholder="Enter end address"
-                value={end.address}
-                onChange={handleEndInputChange}
-              />
-            </div>
-            <div className="suggestions">
-              {endSuggestions.map((item, index) => (
-                <div key={index} onClick={() => handleSelectEndSuggestion(item)}>
-                  {item}
-                </div>
-              ))}
-            </div>
-
-            <div
-              style={{
-                marginLeft: "5px",
-                display: "flex",
-                marginBottom: "5px",
-                width:'75%',
-                justifyContent: 'space-between'
-              }}
-            >
-              <MDBBtn type="submit" size="sm">
-                Search
-              </MDBBtn>
-              <MDBBtn
-                size="sm"
-                onClick={toggleDrawMode}
-                style={{ marginLeft: "185px" }}
+      <div className="column-container">
+        <div className="first-div">
+          <form onSubmit={handleSearch} style={{ padding: "30px" }}>
+            <div>
+              <div
+                style={{
+                  marginLeft: "5px",
+                  marginTop: "8px",
+                  marginBottom: "5px",
+                  width: "75%",
+                }}
               >
-                {drawMode ? "Exit Draw Mode" : "Enter Draw Mode"}
-              </MDBBtn>
+                <MDBInput
+                  size="sm"
+                  label="Enter you start point"
+                  type="text"
+                  name="start"
+                  placeholder="Enter start address"
+                  value={start.address}
+                  onChange={handleStartInputChange}
+                />
+              </div>
+              <div>
+                {startSuggestions.map((item, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleSelectStartSuggestion(item)}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+
+              <div
+                style={{ marginLeft: "5px", marginBottom: "5px", width: "75%" }}
+              >
+                <MDBInput
+                  size="sm"
+                  label="Enter you end point"
+                  type="text"
+                  name="end"
+                  placeholder="Enter end address"
+                  value={end.address}
+                  onChange={handleEndInputChange}
+                />
+              </div>
+              <div>
+                {endSuggestions.map((item, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleSelectEndSuggestion(item)}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+
+              <div
+                style={{
+                  marginLeft: "5px",
+                  display: "flex",
+                  marginBottom: "5px",
+                  width: "75%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <MDBBtn type="submit" size="sm">
+                  Search
+                </MDBBtn>
+                <MDBBtn
+                  size="sm"
+                  onClick={toggleDrawMode}
+                  style={{ marginLeft: "185px" }}
+                >
+                  {drawMode ? "Exit Draw Mode" : "Enter Draw Mode"}
+                </MDBBtn>
+              </div>
             </div>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
 
-      <div className="second-div">
-        {/* Content for the second div */}
-        {/* Add more content as needed */}
-        <img
-            src={pic}  // Replace with the actual image URL
+        <div className="second-div">
+          <img
+            src={pic} // Replace with the actual image URL
             alt="Your Image"
-            style={{ width: '150px', height: '150px', float: 'right',   transform: 'scale(1.2)','background-color': '#ffffff', /* Background color for contrast */
-            padding: '10px'/* Adjust the scale factor as needed */ }}
+            style={{
+              width: "200px",
+              height: "200px",
+              float: "right",
+              transform: "scale(0.7)",
+            }}
           />
+        </div>
       </div>
 
-
-    </div>
-    <div id="map" style={{ height: "80vh", width: "100vw" }} />
+      <div id="map" style={{ height: "79vh", width: "100vw" }} />
     </>
   );
 };
 
 export default MapComponent;
-
-    // <>
-    // {/* <div  className="column-container" >
-    // <div>
-      
-    //   </div>
-    //   <div>
-    //     <div style={{ width: '50%', padding: '20px' }}>
-          
-    //     </div>
-
-    //   </div>
-    // </div> */}
-     
-
-    //   {/* <div id="map" style={{ height: "80vh", width: "100vw" }} /> */}
-    // </>
