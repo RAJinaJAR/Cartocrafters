@@ -1,11 +1,9 @@
 import "./App.css";
 import MapComponent from "./MapComponent";
-
+import Coords from "./Coords";
 
 function App() {
-  return (
-    <MapComponent />
-  );
+  return <Coords />;
 }
 
 export default App;
