@@ -3,7 +3,7 @@ import MapComponent from "./MapComponent";
 import Coords from "./Coords";
 
 function App() {
-  return <Coords />;
+  return <MapComponent />;
 }
 
 export default App;

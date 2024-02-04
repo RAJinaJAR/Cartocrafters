@@ -7,6 +7,8 @@ import customMarkerIcon from "leaflet/dist/images/marker-icon-2x.png";
 import { Icon } from "leaflet";
 import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw";
+import { MDBBtn, MDBInput } from "mdb-react-ui-kit";
+import pic from "./images/pic.png";
 
 const MapComponent = () => {
   const [start, setStart] = useState({ address: "", lat: null, lng: null });
@@ -251,22 +253,36 @@ const MapComponent = () => {
       }
     }
   };
+  const formStyle = {
+    backgroundImage: `url(${pic})`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    padding: "20px", // Add padding to adjust the form content
+  };
 
   return (
-    <div>
-      <button onClick={toggleDrawMode}>
-        {drawMode ? "Exit Draw Mode" : "Enter Draw Mode"}
-      </button>
-      <form onSubmit={handleSearch} className="form">
+    <>
+      <form onSubmit={handleSearch} style={formStyle}>
         <div>
-          <label className="label ">Start Point:</label>
-          <input
-            type="text"
-            name="start"
-            placeholder="Enter start address"
-            value={start.address}
-            onChange={handleStartInputChange}
-          />
+          <div
+            style={{
+              marginLeft: "5px",
+              marginTop: "8px",
+              marginBottom: "5px",
+              width: "30%",
+            }}
+          >
+            <MDBInput
+              size="sm"
+              label="Enter you start point"
+              type="text"
+              name="start"
+              placeholder="Enter start address"
+              value={start.address}
+              onChange={handleStartInputChange}
+            />
+          </div>
           <div className="suggestions">
             {startSuggestions.map((item, index) => (
               <div
@@ -277,16 +293,18 @@ const MapComponent = () => {
               </div>
             ))}
           </div>
-        </div>
-        <div>
-          <label>End Point:</label>
-          <input
-            type="text"
-            name="end"
-            placeholder="Enter end address"
-            value={end.address}
-            onChange={handleEndInputChange}
-          />
+
+          <div style={{ marginLeft: "5px", marginBottom: "5px", width: "30%" }}>
+            <MDBInput
+              size="sm"
+              label="Enter you end point"
+              type="text"
+              name="end"
+              placeholder="Enter end address"
+              value={end.address}
+              onChange={handleEndInputChange}
+            />
+          </div>
           <div className="suggestions">
             {endSuggestions.map((item, index) => (
               <div key={index} onClick={() => handleSelectEndSuggestion(item)}>
@@ -294,11 +312,30 @@ const MapComponent = () => {
               </div>
             ))}
           </div>
+
+          <div
+            style={{
+              marginLeft: "5px",
+              display: "flex",
+              marginBottom: "5px",
+            }}
+          >
+            <MDBBtn type="submit" size="sm">
+              Search
+            </MDBBtn>
+            <MDBBtn
+              size="sm"
+              onClick={toggleDrawMode}
+              style={{ marginLeft: "185px" }}
+            >
+              {drawMode ? "Exit Draw Mode" : "Enter Draw Mode"}
+            </MDBBtn>
+          </div>
         </div>
-        <button type="submit">Search</button>
       </form>
-      <div id="map" style={{ height: "100vh", width: "100vw" }} />
-    </div>
+
+      <div id="map" style={{ height: "80vh", width: "100vw" }} />
+    </>
   );
 };
 
