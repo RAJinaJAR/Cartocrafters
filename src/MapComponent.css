@@ -1,38 +1,61 @@
 /* Add your specific styling here */
 .form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    margin: auto;
-    justify-content: space-between;
-    margin: 10px;
-  }
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: auto;
+  justify-content: space-between;
+  margin: 10px;
+}
 
-  .suggestions {
-    border: 1px solid #ccc;
-    max-height: 100px;
-    overflow-y: auto;
-    margin-top: 5px;
-    width: 300px;
-    margin-left: 5px;
-  }
-  
-  .suggestions div {
-    padding: 5px;
-    cursor: pointer;
-    width: 300px;
-  }
-  
-  .avatar {
-    /* This image is 687 wide by 1024 tall, similar to your aspect ratio */
-    background-image: url('pic.jpg');
-    /* make a square container */
-    width: 150px;
-    height: 150px;
-    /* fill the container, preserving aspect ratio, and cropping to fit */
-    background-size: cover;
-    /* center the image vertically and horizontally */
-    background-position: top center;
-    /* round the edges to a circle with border radius 1/2 container size */
-    border-radius: 50%;
+.suggestions {
+  border: 1px solid #ccc;
+  max-height: 100px;
+  overflow-y: auto;
+  margin-top: 5px;
+  width: 300px;
+  margin-left: 5px;
+}
+
+.suggestions div {
+  padding: 5px;
+  cursor: pointer;
+  width: 300px;
+}
+
+.avatar {
+  /* This image is 687 wide by 1024 tall, similar to your aspect ratio */
+  /* background-image: url('pic.jpg'); */
+  /* make a square container */
+  width: 15px;
+  height: 15px;
+  /* fill the container, preserving aspect ratio, and cropping to fit */
+  background-size: cover;
+  /* center the image vertically and horizontally */
+  background-position: top center;
+  /* round the edges to a circle with border radius 1/2 container size */
+  border-radius: 50%;
+}
+
+.column-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.first-div {
+  width: 75%;
+  padding: 10px;
+  /* border: 1px solid #ccc; */
+  margin-bottom: 10px;
+}
+
+.second-div {
+  width: auto;
+  text-align: right;
+  align-items: right;
+  padding: 10px;
+  /* border: 1px solid #ccc; */
+  margin-bottom: 10px;
+
 }
