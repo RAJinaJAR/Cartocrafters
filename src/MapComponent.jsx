@@ -4,32 +4,24 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import L from "leaflet";
 import "leaflet-routing-machine";
 import customMarkerIcon from "leaflet/dist/images/marker-icon-2x.png";
-import { Icon } from "leaflet";
 import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw";
 import { MDBBtn, MDBInput } from "mdb-react-ui-kit";
-import pic from "./images/pic.png";
+import logo from "./images/logo.png";
+import * as H3 from "h3-js";
 import "./MapComponent.css";
 
+var S2 = require("s2-geometry").S2;
 const MapComponent = () => {
   const [start, setStart] = useState({ address: "", lat: null, lng: null });
   const [end, setEnd] = useState({ address: "", lat: null, lng: null });
   const [map, setMap] = useState(null);
-  const [startMarker, setStartMarker] = useState(null);
-  const [endMarker, setEndMarker] = useState(null);
   const [startSuggestions, setStartSuggestions] = useState([]);
   const [endSuggestions, setEndSuggestions] = useState([]);
   const [routeControl, setRouteControl] = useState(null);
-
   const [drawControl, setDrawControl] = useState(null);
   const [drawMode, setDrawMode] = useState(false);
   const [drawnFeatures, setDrawnFeatures] = useState(null);
-
-  const customIcon = new L.Icon({
-    iconUrl: customMarkerIcon,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-  });
 
   useEffect(() => {
     if (drawnFeatures) {
@@ -37,16 +29,19 @@ const MapComponent = () => {
         const layer = e.layer;
         drawnFeatures.addLayer(layer);
         console.log(e.layer._latlngs);
+        if (layer instanceof L.Circle) {
+          const center = layer.getLatLng();
+          const radius = layer.getRadius();
+          console.log("Center:", center);
+          console.log("Radius:", radius);
+        }
       });
     }
   }, [drawnFeatures]);
 
   useEffect(() => {
     if (!map) {
-      // Initialize Leaflet map
-      var newMap = L.map("map").setView([0, 0], 13); // Default to [0, 0]
-
-      // Get user's current location and set the map view
+      var newMap = L.map("map").setView([0, 0], 13);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -57,20 +52,10 @@ const MapComponent = () => {
         }
       );
 
-      // Add the OpenStreetMap tiles
-      const osm = L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }
-      ).addTo(newMap);
-
       const features = new L.FeatureGroup();
       newMap.addLayer(features);
       setDrawnFeatures(features);
 
-      // Initialize the draw control
       const control = new L.Control.Draw({
         edit: {
           featureGroup: features,
@@ -100,14 +85,11 @@ const MapComponent = () => {
         },
       });
 
-      // Add the draw control to the map
       newMap.addControl(control);
 
-      // Set map object to state
       setMap(newMap);
       setDrawControl(control);
 
-      // Add base tile layer from OpenStreetMap
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -124,49 +106,10 @@ const MapComponent = () => {
       const endCoords = await getCoordinates(end.address);
 
       if (startCoords && endCoords) {
-        // Remove existing route if it exists
         if (routeControl) {
           map.removeControl(routeControl);
-          setRouteControl(null); // Reset the routeControl state
+          setRouteControl(null);
         }
-
-        // Remove existing markers if they exist
-        if (startMarker) {
-          startMarker.remove();
-          setStartMarker(null); // Reset the start marker state
-        }
-        if (endMarker) {
-          endMarker.remove();
-          setEndMarker(null); // Reset the end marker state
-        }
-
-        // Add start marker
-        const newStartMarker = L.marker([startCoords.lat, startCoords.lng], {
-          icon: customIcon,
-          draggable: true,
-        }).addTo(map);
-
-        // Add dragging event for start marker
-        newStartMarker.on("dragend", (e) => {
-          const latlng = e.target.getLatLng();
-          setStart({ ...start, lat: latlng.lat, lng: latlng.lng });
-        });
-
-        setStartMarker(newStartMarker);
-
-        // Add end marker
-        const newEndMarker = L.marker([endCoords.lat, endCoords.lng], {
-          icon: customIcon,
-          draggable: true,
-        }).addTo(map);
-
-        // Add dragging event for end marker
-        newEndMarker.on("dragend", (e) => {
-          const latlng = e.target.getLatLng();
-          setEnd({ ...end, lat: latlng.lat, lng: latlng.lng });
-        });
-
-        setEndMarker(newEndMarker);
 
         const control = L.Routing.control({
           waypoints: [
@@ -174,9 +117,38 @@ const MapComponent = () => {
             L.latLng(endCoords.lat, endCoords.lng),
           ],
           routeWhileDragging: true,
+          createMarker: function (i, waypoint, n) {
+            const marker = L.marker(waypoint.latLng, {
+              draggable: true,
+              bounceOnAdd: false,
+              bounceOnAddOptions: {
+                duration: 1000,
+                height: 800,
+              },
+              icon: L.icon({
+                iconUrl: customMarkerIcon,
+                iconSize: [30, 40],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30],
+              }),
+            });
+            const myPopup = L.popup().setContent("Popup content here");
+            marker.on("dragend", function (event) {
+              const latlng = event.target.getLatLng();
+              console.log("New Latitude:", latlng.lat);
+              console.log("New Longitude:", latlng.lng);
+              console.log(event.target);
+              const h3Cell = H3.latLngToCell(latlng.lat, latlng.lng, 7);
+              console.log("H3 Cell:", h3Cell);
+              var key = S2.latLngToKey(latlng.lat, latlng.lng, 15);
+              console.log("S2 Key", key);
+              console.log(S2.keyToId(key));
+            });
+            marker.bindPopup(myPopup).openPopup();
+            return marker;
+          },
         });
 
-        // Save the route control to the state variable
         setRouteControl(control);
 
         control.addTo(map).route();
@@ -279,15 +251,30 @@ const MapComponent = () => {
                   onChange={handleStartInputChange}
                 />
               </div>
-              <div>
-                {startSuggestions.map((item, index) => (
-                  <div
-                    key={index}
-                    onClick={() => handleSelectStartSuggestion(item)}
-                  >
-                    {item}
-                  </div>
-                ))}
+              <div style={{ position: "relative" }}>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-100%",
+                    left: 0,
+                    zIndex: 999,
+                  }}
+                >
+                  {startSuggestions.map((item, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleSelectStartSuggestion(item)}
+                      style={{
+                        background: "white",
+                        border: "1px solid black",
+                        padding: "5px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div
@@ -303,15 +290,30 @@ const MapComponent = () => {
                   onChange={handleEndInputChange}
                 />
               </div>
-              <div>
-                {endSuggestions.map((item, index) => (
-                  <div
-                    key={index}
-                    onClick={() => handleSelectEndSuggestion(item)}
-                  >
-                    {item}
-                  </div>
-                ))}
+              <div style={{ position: "relative" }}>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    zIndex: 999,
+                  }}
+                >
+                  {endSuggestions.map((item, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleSelectEndSuggestion(item)}
+                      style={{
+                        background: "white",
+                        border: "1px solid black",
+                        padding: "5px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div
@@ -340,7 +342,7 @@ const MapComponent = () => {
 
         <div className="second-div">
           <img
-            src={pic} // Replace with the actual image URL
+            src={logo}
             alt="Your Image"
             style={{
               width: "200px",
@@ -352,7 +354,7 @@ const MapComponent = () => {
         </div>
       </div>
 
-      <div id="map" style={{ height: "79vh", width: "100vw" }} />
+      <div id="map" style={{ height: "70vh", width: "100vw" }} />
     </>
   );
 };
