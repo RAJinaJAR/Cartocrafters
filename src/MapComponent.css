@@ -1,0 +1,15 @@
+.column-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.first-div {
+  width: 75%;
+}
+
+.second-div {
+  width: auto;
+  text-align: right;
+  align-items: right;
+}
